@@ -1,10 +1,9 @@
 poc-kafka-stream:
   image: "poc-kafka-stream"
   container_name: poc-kafka-stream
-  ports:
-    - "9092"
+  environment:
+  - BOOTSTRAP_SERVERS_CONFIG=172.16.18.141:9092
   restart: always
-
 
 
 
