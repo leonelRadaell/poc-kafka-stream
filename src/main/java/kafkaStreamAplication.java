@@ -29,13 +29,18 @@ public class kafkaStreamAplication {
     public static void main(String[] args) {
         BasicConfigurator.configure();
 
+        //Define un flujo de entrada
         KStreamBuilder builder = new KStreamBuilder();
 
+        //se asocia al topic "input-topic" permitiendo realizar operaciones sobre los mensajes
         KStream wordCountsInput = builder.stream("input-topic");
+
+        //Con las operaciones KStream agrupamos palabras y contamos devolviendo un objeto de tipo KTable<String,Long>
         KTable counts = wordCountsInput.mapValues(v -> v.toString().toUpperCase())
                 .flatMapValues(value -> Arrays.asList(value.toString().split(" "))).selectKey((ignoredKey, word) -> word)
                 .groupByKey().count();
 
+        //"Aca esta la magia" con la funcion to de KTable trasmitimos al ouput el resultado
         counts.to(Serdes.String(), Serdes.Long(), "output-topic");
 
         KafkaStreams streams = new KafkaStreams(builder, getKafkaConfiguration());
